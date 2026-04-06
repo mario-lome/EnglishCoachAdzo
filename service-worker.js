@@ -1,71 +1,129 @@
-// service-worker.js
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = `english-app-${CACHE_VERSION}`;
+// service-worker.js - EnglishCoachAdzo PWA
+// ✅ Version corrigée et optimisée
 
-// 📦 Tous les fichiers statiques à mettre en cache dès l'installation
+const CACHE_VERSION = 'v1';
+const APP_NAME = 'english-coach-adzo'; // ✅ Nom technique cohérent avec le projet
+const CACHE_NAME = `${APP_NAME}-${CACHE_VERSION}`;
+
+// 📦 Assets statiques à mettre en cache (chemins absolus depuis la racine)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/css/main.css',
   '/js/app.js',
+  '/js/engine.js',       // ✅ Ajouté : module quiz enfants
   '/data/lessons.json',
   '/manifest.json',
-  '/bg.png' // ← Image de fond ajoutée
+  '/bg.png',             // ✅ Image de fond
+  '/assets/icons/icon-192.png',  // ✅ Icônes PWA
+  '/assets/icons/icon-512.png'
 ];
 
-// 🔽 INSTALLATION : mise en cache des fichiers statiques
+// 🔽 INSTALLATION : pré-cache des fichiers essentiels
 self.addEventListener('install', (event) => {
+  console.log(`[SW] Installation de ${CACHE_NAME}`);
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Mise en cache des assets statiques');
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('[SW] Pré-cache des assets...');
+        return cache.addAll(STATIC_ASSETS);
+      })
+      .then(() => {
+        console.log('[SW] Pré-cache terminé ✅');
+        return self.skipWaiting(); // Active immédiatement le nouveau SW
+      })
+      .catch((err) => {
+        console.error('[SW] Erreur de pré-cache:', err);
+      })
   );
-  self.skipWaiting(); // Force l'activation immédiate du nouveau SW
 });
 
-// 🗑️ ACTIVATION : nettoyage des anciens caches
+// 🗑️ ACTIVATION : nettoyage des anciens caches + prise de contrôle
 self.addEventListener('activate', (event) => {
+  console.log(`[SW] Activation de ${CACHE_NAME}`);
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name.startsWith('english-app-') && name !== CACHE_NAME)
-          .map((name) => {
-            console.log('[SW] Suppression de l\'ancien cache :', name);
-            return caches.delete(name);
-          })
-      );
-    })
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((name) => name.startsWith(APP_NAME + '-') && name !== CACHE_NAME)
+            .map((name) => {
+              console.log(`[SW] Suppression de l'ancien cache : ${name}`);
+              return caches.delete(name);
+            })
+        );
+      })
+      .then(() => {
+        console.log('[SW] Anciens caches nettoyés 🧹');
+        return self.clients.claim(); // Prend le contrôle des pages ouvertes
+      })
   );
-  self.clients.claim(); // Prend le contrôle des pages ouvertes immédiatement
 });
 
-// 🌐 FETCH : stratégie Cache-First + Fallback Hors Ligne
+// 🌐 FETCH : stratégie Cache-First avec fallback réseau + hors ligne
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // 1️⃣ Si présent dans le cache → on le retourne
-      if (cachedResponse) return cachedResponse;
+  const { request } = event;
+  const url = new URL(request.url);
 
-      // 2️⃣ Sinon → requête réseau + mise en cache pour la prochaine fois
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+  // Ignore les requêtes externes (CDN, APIs tierces, analytics...)
+  if (url.origin !== location.origin) {
+    return;
+  }
+
+  event.respondWith(
+    caches.match(request)
+      .then((cachedResponse) => {
+        // 1️⃣ Si trouvé dans le cache → retourne immédiatement
+        if (cachedResponse) {
+          return cachedResponse;
         }
 
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
+        // 2️⃣ Sinon → requête réseau
+        return fetch(request)
+          .then((networkResponse) => {
+            // Vérifie que la réponse est valide
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
+            }
 
-        return networkResponse;
-      });
-    }).catch(() => {
-      // 🆘 Fallback hors ligne pour la navigation HTML
-      if (event.request.mode === 'navigate') {
-        return caches.match('/index.html');
-      }
-    })
+            // Clone et met en cache pour la prochaine fois
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(request, responseToCache);
+              })
+              .catch((err) => {
+                console.warn('[SW] Échec de mise en cache:', err);
+              });
+
+            return networkResponse;
+          })
+          .catch((error) => {
+            // 🆘 Fallback hors ligne pour la navigation HTML
+            if (request.mode === 'navigate') {
+              console.log('[SW] Hors ligne → fallback sur index.html');
+              return caches.match('/index.html');
+            }
+            // Pour les autres ressources, retourne une réponse d'erreur claire
+            console.warn('[SW] Requête échouée:', error);
+            return new Response('Offline - EnglishCoachAdzo', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: { 'Content-Type': 'text/plain' }
+            });
+          });
+      })
   );
-});----+6
+});
+
+// 🔄 Optionnel : Gestion des messages (pour forcer une mise à jour depuis l'app)
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.delete(CACHE_NAME).then(() => {
+      console.log('[SW] Cache vidé sur demande');
+    });
+  }
+});
