@@ -1,0 +1,20 @@
+{
+  "kids": {
+    "title": "🌟 Découvre l'anglais en t'amusant !",
+    "lessons": [
+      {
+        "id": 1,
+        "title": "Les animaux",
+        "type": "match",
+        "pairs": [
+          { "img": "🐱", "word": "Cat" },
+          { "img": "🐶", "word": "Dog" },
+          { "img": "🐦", "word": "Bird" },
+          { "img": "🐸", "word": "Frog" }
+        ]
+      }
+    ]
+  },
+  "pro": { "title": "💼 Anglais professionnel", "lessons": [] },
+  "method": { "title": "📈 Méthode structurée", "lessons": [] }
+}
