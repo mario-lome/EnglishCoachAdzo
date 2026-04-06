@@ -11,12 +11,15 @@ const STATIC_ASSETS = [
   '/index.html',
   '/css/main.css',
   '/js/app.js',
-  '/js/engine.js',       // ✅ Ajouté : module quiz enfants
+  '/js/engine.js',
   '/data/lessons.json',
   '/manifest.json',
-  '/bg.png',             // ✅ Image de fond
-  '/assets/icons/icon-192.png',  // ✅ Icônes PWA
-  '/assets/icons/icon-512.png'
+  '/bg.png',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/assets/audio/correct.mp3',  // ← AJOUTÉ
+  '/assets/audio/wrong.mp3',    // ← AJOUTÉ
+  '/assets/audio/victory.mp3'   // ← AJOUTÉ
 ];
 
 // 🔽 INSTALLATION : pré-cache des fichiers essentiels
