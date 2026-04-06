@@ -1,0 +1,28 @@
+# 1. Va dans ton dossier projet (adapte le chemin)
+cd chemin/vers/englishCoachAdzo
+
+# 2. Initialise Git
+git init
+
+# 3. Configure ton identité (une seule fois)
+git config --global user.name "corporation"
+git config --global user.email "corporationrhema@gmail.com"
+
+# 4. Ajoute tous les fichiers (Git respectera automatiquement .gitignore)
+git add .
+
+# 5. Fais ton premier commit
+git commit -m "feat: EnglishCoachAdzo - PWA initiale avec quiz enfants, thème sombre & bg.png"
+
+# 6. Vérifie
+git status
+# ✅ Doit afficher : "nothing to commit, working tree clean"
+
+git init
+git config --global user.name "corporation"
+git config --global user.email "corporationrhema@gmail.com"
+git add .
+git commit -m "feat: EnglishCoachAdzo - PWA initiale avec quiz enfants, thème sombre & bg.png"
+
+git rm --cached .gitignore
+git add .gitignore
