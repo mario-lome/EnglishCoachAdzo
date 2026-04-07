@@ -9,8 +9,7 @@
         "pairs": [
           { "img": "🐱", "word": "Cat" },
           { "img": "🐶", "word": "Dog" },
-          { "img": "🐦", "word": "Bird" },
-          { "img": "🐸", "word": "Frog" }
+          { "img": "🐦", "word": "Bird" }
         ]
       }
     ]
@@ -18,7 +17,7 @@
   "pro": {
     "title": "💼 Anglais professionnel",
     "lessons": [
-      { "id": 1, "title": "Emails formels", "type": "fill", "items": ["Please find attached...", "I would appreciate..."] }
+      { "id": 1, "title": "Emails formels", "type": "fill", "items": ["Please find attached..."] }
     ]
   },
   "method": {
