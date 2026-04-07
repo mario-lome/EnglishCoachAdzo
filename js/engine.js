@@ -1,45 +1,37 @@
-// js/engine.js - VERSION ULTRA-SIMPLE & GARANTIE
+// js/engine.js - VERSION FINALE & GARANTIE ✅
 console.log('🟢 engine.js: chargement démarré');
 
 // 🌍 Création immédiate de l'objet global
 window.Engine = {};
 
-// 🎵 Audio (déclaré en global pour éviter les problèmes de scope)
-// 🎵 Audio Manager - Version Mobile Compatible
-const engineAudio = {
-  correct: null,
-  wrong: null,
-  victory: null,
-  initialized: false,
-  
-  init: function() {
-    if (this.initialized) return;
-    this.correct = new Audio('/assets/audio/correct.mp3');
-    this.wrong = new Audio('/assets/audio/wrong.mp3');
-    this.victory = new Audio('/assets/audio/victory.mp3');
-    this.initialized = true;
-    console.log('🔊 Audio initialisé');
-  },
-  
-  play: function(name) {
-    // Initialisation différée (après 1ère interaction utilisateur)
-    if (!this.initialized) this.init();
-    
-    try {
-      const audio = this[name];
-      if (audio) {
-        audio.currentTime = 0;
-        audio.volume = 0.7; // Volume à 70% pour ne pas être trop fort
-        audio.play().catch(e => {
-          // Mobile bloque l'autoplay : on ignore silencieusement
-          console.warn(`🔇 Son "${name}" bloqué (policy mobile)`);
-        });
-      }
-    } catch(e) {
-      console.warn('❌ Erreur audio:', e);
+// 🎵 Audio Manager - Version Synthétique (0 fichier requis, 0 erreur)
+function playSound(name) {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (name === 'correct') {
+      osc.frequency.value = 880; gain.gain.value = 0.3;
+      osc.start(); osc.stop(ctx.currentTime + 0.15);
+    } else if (name === 'wrong') {
+      osc.frequency.value = 330; gain.gain.value = 0.3;
+      osc.start(); osc.stop(ctx.currentTime + 0.25);
+    } else if (name === 'victory') {
+      osc.frequency.value = 660; gain.gain.value = 0.4;
+      osc.start();
+      setTimeout(() => osc.frequency.value = 880, 120);
+      setTimeout(() => osc.frequency.value = 1100, 240);
+      setTimeout(() => osc.stop(), 400);
     }
+  } catch(e) {
+    // Silencieux en cas d'erreur (mobile, navigateur ancien...)
   }
-};
+}
 
 // 📦 État du quiz (global simple)
 let engineState = { currentIndex: 0, score: 0, pairs: [] };
@@ -50,7 +42,7 @@ window.Engine.renderQuiz = function(lesson) {
   
   // Reset état
   engineState.currentIndex = 0;
-  engineState.score =  0;
+  engineState.score = 0;
   engineState.pairs = [...lesson.pairs].sort(() => Math.random() - 0.5);
   
   // Rendu HTML
@@ -127,7 +119,7 @@ function engineHandleAnswer(selectedWord) {
   
   if (selectedWord === target) {
     // Bonne réponse
-    engineAudio.play('correct');
+    playSound('correct'); // ✅ Appel cohérent
     engineState.score += 10;
     const scoreEl = document.getElementById('score-val');
     if (scoreEl) scoreEl.textContent = engineState.score;
@@ -141,7 +133,7 @@ function engineHandleAnswer(selectedWord) {
     if (nextBtn) nextBtn.classList.remove('hidden');
   } else {
     // Mauvaise réponse
-    engineAudio.play('wrong');
+    playSound('wrong'); // ✅ Appel cohérent
     zone.classList.add('shake');
     feedback.textContent = "Essaie encore ! 💪";
     feedback.className = "feedback error";
@@ -151,7 +143,7 @@ function engineHandleAnswer(selectedWord) {
 
 // 🏆 Fin du quiz
 function engineCompleteQuiz() {
-  engineAudio.play('victory');
+  playSound('victory'); // ✅ Appel cohérent
   const area = document.getElementById('quiz-area');
   if (!area) return;
   
