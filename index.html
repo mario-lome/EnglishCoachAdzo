@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#4361ee">
   <title>EnglishCoachAdzo</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="css/main.css">
@@ -27,8 +28,11 @@
     <button data-view="progress">📊 Progrès</button>
   </nav>
 
-  <script type="module" src="js/app.js"></script>
-  <script type="module" src="js/engine.js"></script>
-<script type="module" src="js/app.js"></script>
+  <!-- ⚠️ CORRECTIONS APPLIQUÉES :
+       1. Supprimé le doublon de app.js
+       2. Inversé l'ordre : engine.js DOIT charger AVANT app.js
+       3. Retiré type="module" pour que window.Engine soit accessible globalement -->
+  <script src="js/engine.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
