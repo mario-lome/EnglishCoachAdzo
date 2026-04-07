@@ -1,6 +1,8 @@
 // js/engine.js - Module Quiz Enfants (Complet & Autonome)
 const Engine = (() => {
   let state = { currentLesson: null, currentIndex: 0, score: 0, pairs: [], draggedItem: null };
+  console.log('🔍 engine.js chargé');
+window.EngineTest = 'OK'; // Force une variable globale pour le test
 
   // 🎵 Gestionnaire Audio (sécurisé pour mobile)
   const Audio = {
