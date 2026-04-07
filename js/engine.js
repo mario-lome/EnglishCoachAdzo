@@ -5,13 +5,39 @@ console.log('🟢 engine.js: chargement démarré');
 window.Engine = {};
 
 // 🎵 Audio (déclaré en global pour éviter les problèmes de scope)
+// 🎵 Audio Manager - Version Mobile Compatible
 const engineAudio = {
-  correct: new Audio('/assets/audio/correct.mp3'),
-  wrong: new Audio('/assets/audio/wrong.mp3'),
-  victory: new Audio('/assets/audio/victory.mp3'),
+  correct: null,
+  wrong: null,
+  victory: null,
+  initialized: false,
+  
+  init: function() {
+    if (this.initialized) return;
+    this.correct = new Audio('/assets/audio/correct.mp3');
+    this.wrong = new Audio('/assets/audio/wrong.mp3');
+    this.victory = new Audio('/assets/audio/victory.mp3');
+    this.initialized = true;
+    console.log('🔊 Audio initialisé');
+  },
+  
   play: function(name) {
-    try { engineAudio[name].currentTime = 0; engineAudio[name].play().catch(()=>{}); } 
-    catch(e) { console.warn('Audio error:', e); }
+    // Initialisation différée (après 1ère interaction utilisateur)
+    if (!this.initialized) this.init();
+    
+    try {
+      const audio = this[name];
+      if (audio) {
+        audio.currentTime = 0;
+        audio.volume = 0.7; // Volume à 70% pour ne pas être trop fort
+        audio.play().catch(e => {
+          // Mobile bloque l'autoplay : on ignore silencieusement
+          console.warn(`🔇 Son "${name}" bloqué (policy mobile)`);
+        });
+      }
+    } catch(e) {
+      console.warn('❌ Erreur audio:', e);
+    }
   }
 };
 
