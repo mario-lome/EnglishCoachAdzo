@@ -1,42 +1,40 @@
-// js/app.js - Contrôleur principal
+// js/app.js
 const selector = document.getElementById('track-selector');
 const html = document.documentElement;
 const content = document.getElementById('app-content');
 
 async function loadTrack(track) {
+  console.log(`🔄 Chargement: ${track}`);
   html.dataset.track = track;
   localStorage.setItem('selectedTrack', track);
 
   try {
-    const res = await fetch('data/lessons.json');
-    if (!res.ok) throw new Error('Impossible de charger les données');
+    const res = await fetch('/data/lessons.json');
+    if (!res.ok) throw new Error(`Erreur HTTP: ${res.status}`);
     const data = await res.json();
     const trackData = data[track];
 
-    // Met à jour le titre
     document.getElementById('app-title').textContent = 
-      `EnglishCoachAdzo ${track === 'kids' ? '🎮' : track === 'pro' ? '🏢' : '📈'}`;
+      `EnglishCoachAdzo ${track==='kids'?'🎮':track==='pro'?'🏢':'📈'}`;
 
-    // Affichage conditionnel
-    console.log('🔍 Test Engine:', typeof Engine, window.EngineTest);
-    if (track === 'kids' && typeof Engine !== 'undefined' && trackData.lessons?.[0]) {
-      Engine.renderQuiz(trackData.lessons[0]);
-    } else if (trackData.lessons?.[0]) {
-      // Fallback simple pour Pro & Méthode (à remplacer par leurs modules plus tard)
-      content.innerHTML = `<div class="card"><h2>${trackData.title}</h2><p>Module en cours de développement...</p></div>`;
+    if (track === 'kids') {
+      // 🔍 VÉRIFICATION EXPLICITE AVANT APPEL
+      if (!window.Engine || typeof window.Engine.renderQuiz !== 'function') {
+        throw new Error('window.Engine.renderQuiz n\'est pas défini. Vérifie engine.js et vide le cache.');
+      }
+      const lesson = trackData.lessons?.[0];
+      if (!lesson?.pairs) throw new Error('Aucune leçon "kids" valide trouvée');
+      
+      window.Engine.renderQuiz(lesson);
     } else {
-      content.innerHTML = `<div class="card"><h2>Aucune leçon disponible</h2></div>`;
+      content.innerHTML = `<div class="card"><h2>${trackData.title}</h2><p>Module en cours de développement...</p></div>`;
     }
   } catch (err) {
-    console.error('❌ Erreur chargement track:', err);
-    content.innerHTML = `<div class="card"><h2>⚠️ Erreur de chargement</h2><p>${err.message}</p></div>`;
+    console.error('❌ ERREUR:', err);
+    content.innerHTML = `<div class="card"><h2>⚠️ ${err.message}</h2></div>`;
   }
 }
 
-// Initialisation
 selector.addEventListener('change', e => loadTrack(e.target.value));
 selector.value = localStorage.getItem('selectedTrack') || 'kids';
 loadTrack(selector.value);
-
-// Service Worker (désactivé temporairement pour les tests)
-// if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
