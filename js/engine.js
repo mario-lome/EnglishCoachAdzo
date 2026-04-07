@@ -1,7 +1,24 @@
-// js/engine.js
+// js/engine.js - Module Quiz Enfants (Complet & Autonome)
 const Engine = (() => {
   let state = { currentLesson: null, currentIndex: 0, score: 0, pairs: [], draggedItem: null };
 
+  // 🎵 Gestionnaire Audio (sécurisé pour mobile)
+  const Audio = {
+    correct: new Audio('/assets/audio/correct.mp3'),
+    wrong: new Audio('/assets/audio/wrong.mp3'),
+    victory: new Audio('/assets/audio/victory.mp3'),
+    play(sound) {
+      try {
+        this[sound].currentTime = 0;
+        // Mobile bloque l'autoplay, mais ici on déclenche après interaction utilisateur ✅
+        this[sound].play().catch(() => console.warn(`Audio ${sound} bloqué ou introuvable`));
+      } catch (e) {
+        console.warn('Audio non chargé:', sound);
+      }
+    }
+  };
+
+  // 🖥️ Rendu initial de la leçon
   const renderQuiz = (lesson) => {
     state.currentLesson = lesson;
     state.pairs = [...lesson.pairs].sort(() => Math.random() - 0.5);
@@ -18,9 +35,13 @@ const Engine = (() => {
       <button id="next-btn" class="hidden">Suivant ➡️</button>
     `;
     renderRound();
-    document.getElementById('next-btn')?.addEventListener('click', () => { state.currentIndex++; saveProgress(); renderRound(); });
+    document.getElementById('next-btn')?.addEventListener('click', () => {
+      state.currentIndex++;
+      renderRound();
+    });
   };
 
+  // 🔄 Rendu d'une manche
   const renderRound = () => {
     const area = document.getElementById('quiz-area');
     const current = state.pairs[state.currentIndex];
@@ -41,18 +62,27 @@ const Engine = (() => {
     updateProgress();
   };
 
+  // 🖱️👆 Gestion Drag & Drop (Desktop + Mobile)
   const setupDragAndDrop = () => {
     const zone = document.querySelector('.drop-zone');
     const cards = document.querySelectorAll('.option-card');
 
     // Desktop
     cards.forEach(c => {
-      c.addEventListener('dragstart', e => { state.draggedItem = e.target.dataset.word; e.dataTransfer.setData('text', e.target.dataset.word); e.target.style.opacity='0.5'; });
-      c.addEventListener('dragend', e => e.target.style.opacity='1');
+      c.addEventListener('dragstart', e => {
+        state.draggedItem = e.target.dataset.word;
+        e.dataTransfer.setData('text', state.draggedItem);
+        e.target.style.opacity = '0.5';
+      });
+      c.addEventListener('dragend', e => e.target.style.opacity = '1');
     });
     zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
     zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); handleAnswer(e.dataTransfer.getData('text')); });
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      handleAnswer(e.dataTransfer.getData('text'));
+    });
 
     // Mobile Touch
     let clone = null;
@@ -61,49 +91,94 @@ const Engine = (() => {
         e.preventDefault();
         state.draggedItem = c.dataset.word;
         clone = c.cloneNode(true);
-        clone.style.cssText = 'position:fixed;opacity:0.8;z-index:1000;pointer-events:none;transform:scale(1.1);';
+        clone.style.cssText = 'position:fixed;opacity:0.8;z-index:1000;pointer-events:none;transform:scale(1.1);background:var(--card-bg);padding:1rem;border-radius:12px;';
         document.body.appendChild(clone);
         moveTouch(e.touches[0]);
-      }, {passive:false});
-      c.addEventListener('touchmove', e => { e.preventDefault(); moveTouch(e.touches[0]); }, {passive:false});
+      }, { passive: false });
+
+      c.addEventListener('touchmove', e => { e.preventDefault(); moveTouch(e.touches[0]); }, { passive: false });
+
       c.addEventListener('touchend', e => {
-        if(clone) clone.remove();
+        if (clone) clone.remove();
         const t = e.changedTouches[0];
         const r = zone.getBoundingClientRect();
-        if(t.clientX>=r.left && t.clientX<=r.right && t.clientY>=r.top && t.clientY<=r.bottom) handleAnswer(c.dataset.word);
+        if (t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom) {
+          handleAnswer(c.dataset.word);
+        }
       });
     });
-    const moveTouch = t => { if(clone) { clone.style.left=`${t.clientX-60}px`; clone.style.top=`${t.clientY-25}px`; } };
+
+    const moveTouch = t => { if (clone) { clone.style.left = `${t.clientX - 60}px`; clone.style.top = `${t.clientY - 25}px`; } };
   };
 
+  // ✅❌ Vérification de la réponse + Sons
   const handleAnswer = (word) => {
     const fb = document.getElementById('feedback');
     const zone = document.querySelector('.drop-zone');
-    if(word === zone.dataset.target) {
+
+    if (word === zone.dataset.target) {
+      Audio.play('correct');
       state.score += 10;
       document.getElementById('score-val').textContent = state.score;
       zone.innerHTML = `<span style="color:#34d399;font-weight:bold;">✅ ${word}</span>`;
       zone.classList.add('correct');
-      fb.textContent = "Bravo ! 🎉"; fb.className = "feedback success";
+      fb.textContent = "Bravo ! 🎉";
+      fb.className = "feedback success";
       document.getElementById('next-btn').classList.remove('hidden');
     } else {
+      Audio.play('wrong');
       zone.classList.add('shake');
-      fb.textContent = "Essaie encore ! 💪"; fb.className = "feedback error";
-      setTimeout(()=>zone.classList.remove('shake'), 400);
+      fb.textContent = "Essaie encore ! 💪";
+      fb.className = "feedback error";
+      setTimeout(() => zone.classList.remove('shake'), 400);
     }
   };
 
+  // 📊 Mise à jour barre de progression
   const updateProgress = () => {
-    document.querySelector('.progress-fill').style.width = `${(state.currentIndex/state.pairs.length)*100}%`;
+    const pct = (state.currentIndex / state.pairs.length) * 100;
+    document.querySelector('.progress-fill').style.width = `${pct}%`;
   };
 
+  // 🏆 Fin du quiz + Sauvegarde + Écran de victoire
   const completeQuiz = () => {
-    localStorage.setItem('eca_kids_progress', JSON.stringify({score: state.score, date: new Date().toISOString()}));
-    document.getElementById('quiz-area').innerHTML = `<div class="quiz-complete"><h2>🏆 Félicitations !</h2><p>Score final : <strong>${state.score} pts</strong></p><button onclick="location.reload()">Rejouer 🔄</button></div>`;
-    document.getElementById('next-btn').remove();
+    const progress = JSON.parse(localStorage.getItem('eca_kids_progress') || '{}');
+    progress.lastScore = state.score;
+    progress.lastDate = new Date().toISOString();
+    localStorage.setItem('eca_kids_progress', JSON.stringify(progress));
+
+    Audio.play('victory');
+    document.getElementById('quiz-area').innerHTML = `
+      <div class="victory-overlay" id="victory-overlay">
+        <div class="victory-card">
+          <div class="victory-emoji">🏆</div>
+          <h2>Bravo !</h2>
+          <p>Score final : <strong>${state.score} points</strong></p>
+          <button class="victory-btn" id="victory-replay">Rejouer 🔄</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('next-btn')?.remove();
+    document.getElementById('victory-replay').addEventListener('click', () => location.reload());
+    createConfetti();
   };
 
-  const saveProgress = () => {}; // Placeholder for intermediate saves
+  // 🎉 Confettis animés
+  const createConfetti = () => {
+    const overlay = document.getElementById('victory-overlay');
+    const colors = ['#ff6b6b', '#4361ee', '#10b981', '#f59e0b', '#8b5cf6'];
+    for (let i = 0; i < 40; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 2 + 's';
+      c.style.width = Math.random() * 10 + 5 + 'px';
+      c.style.height = Math.random() * 10 + 5 + 'px';
+      overlay.appendChild(c);
+    }
+  };
 
+  // 📤 Export public
   return { renderQuiz };
 })();
