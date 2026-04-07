@@ -15,6 +15,16 @@
       }
     ]
   },
-  "pro": { "title": "💼 Anglais professionnel", "lessons": [] },
-  "method": { "title": "📈 Méthode structurée", "lessons": [] }
+  "pro": {
+    "title": "💼 Anglais professionnel",
+    "lessons": [
+      { "id": 1, "title": "Emails formels", "type": "fill", "items": ["Please find attached...", "I would appreciate..."] }
+    ]
+  },
+  "method": {
+    "title": "📈 Méthode structurée",
+    "lessons": [
+      { "id": 1, "title": "Grammaire : Present Perfect", "type": "theory", "content": "Subject + have/has + V3..." }
+    ]
+  }
 }
