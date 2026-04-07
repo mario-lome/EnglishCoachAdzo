@@ -16,27 +16,32 @@ function playSound(name) {
     gain.connect(ctx.destination);
 
     if (name === 'correct') {
-      osc.frequency.value = 880; gain.gain.value = 0.3;
-      osc.start(); osc.stop(ctx.currentTime + 0.15);
-    } else if (name === 'wrong') {
-      osc.frequency.value = 330; gain.gain.value = 0.3;
-      osc.start(); osc.stop(ctx.currentTime + 0.25);
-    } else if (name === 'victory') {
-      osc.frequency.value = 660; gain.gain.value = 0.4;
+      osc.frequency.value = 880;
+      gain.gain.value = 0.3;
       osc.start();
-      setTimeout(() => osc.frequency.value = 880, 120);
-      setTimeout(() => osc.frequency.value = 1100, 240);
-      setTimeout(() => osc.stop(), 400);
+      osc.stop(ctx.currentTime + 0.15);
+    } else if (name === 'wrong') {
+      osc.frequency.value = 330;
+      gain.gain.value = 0.3;
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    } else if (name === 'victory') {
+      osc.frequency.value = 660;
+      gain.gain.value = 0.4;
+      osc.start();
+      setTimeout(() => { osc.frequency.value = 880; }, 120);
+      setTimeout(() => { osc.frequency.value = 1100; }, 240);
+      setTimeout(() => { osc.stop(); }, 400);
     }
   } catch(e) {
-    // Silencieux en cas d'erreur (mobile, navigateur ancien...)
+    // Silencieux en cas d'erreur
   }
 }
 
 // 📦 État du quiz (global simple)
 let engineState = { currentIndex: 0, score: 0, pairs: [] };
 
-// ✅ FONCTION PRINCIPALE - définie directement
+// ✅ FONCTION PRINCIPALE
 window.Engine.renderQuiz = function(lesson) {
   console.log('🎮 renderQuiz: démarrage pour', lesson.title);
   
@@ -47,7 +52,10 @@ window.Engine.renderQuiz = function(lesson) {
   
   // Rendu HTML
   const content = document.getElementById('app-content');
-  if (!content) { console.error('❌ #app-content introuvable'); return; }
+  if (!content) {
+    console.error('❌ #app-content introuvable');
+    return;
+  }
   
   content.innerHTML = `
     <div class="quiz-header">
@@ -77,7 +85,10 @@ window.Engine.renderQuiz = function(lesson) {
 // 🔄 Rendu d'une manche
 function engineRenderRound() {
   const current = engineState.pairs[engineState.currentIndex];
-  if (!current) { engineCompleteQuiz(); return; }
+  if (!current) {
+    engineCompleteQuiz();
+    return;
+  }
   
   const area = document.getElementById('quiz-area');
   if (!area) return;
@@ -119,7 +130,7 @@ function engineHandleAnswer(selectedWord) {
   
   if (selectedWord === target) {
     // Bonne réponse
-    playSound('correct'); // ✅ Appel cohérent
+    playSound('correct');
     engineState.score += 10;
     const scoreEl = document.getElementById('score-val');
     if (scoreEl) scoreEl.textContent = engineState.score;
@@ -133,17 +144,17 @@ function engineHandleAnswer(selectedWord) {
     if (nextBtn) nextBtn.classList.remove('hidden');
   } else {
     // Mauvaise réponse
-    playSound('wrong'); // ✅ Appel cohérent
+    playSound('wrong');
     zone.classList.add('shake');
     feedback.textContent = "Essaie encore ! 💪";
     feedback.className = "feedback error";
-    setTimeout(() => zone.classList.remove('shake'), 300);
+    setTimeout(() => { zone.classList.remove('shake'); }, 300);
   }
 }
 
 // 🏆 Fin du quiz
 function engineCompleteQuiz() {
-  playSound('victory'); // ✅ Appel cohérent
+  playSound('victory');
   const area = document.getElementById('quiz-area');
   if (!area) return;
   
