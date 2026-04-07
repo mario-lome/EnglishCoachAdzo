@@ -18,6 +18,7 @@ async function loadTrack(track) {
       `EnglishCoachAdzo ${track === 'kids' ? '🎮' : track === 'pro' ? '🏢' : '📈'}`;
 
     // Affichage conditionnel
+    console.log('🔍 Test Engine:', typeof Engine, window.EngineTest);
     if (track === 'kids' && typeof Engine !== 'undefined' && trackData.lessons?.[0]) {
       Engine.renderQuiz(trackData.lessons[0]);
     } else if (trackData.lessons?.[0]) {
