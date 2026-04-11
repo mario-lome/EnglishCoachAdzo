@@ -97,3 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
   loadTrack(selector.value);
   const pScript = document.createElement('script'); pScript.src = '/js/progress.js'; pScript.defer = true; document.body.appendChild(pScript);
 });
+
+// 📶 Détection état réseau
+const offlineBanner = document.getElementById('offline-banner');
+function updateOnlineStatus() {
+  const isOnline = navigator.onLine;
+  offlineBanner.textContent = isOnline ? '🌐 Connecté' : '📶 Mode hors ligne activé';
+  offlineBanner.classList.toggle('visible', !isOnline);
+  if(isOnline) setTimeout(() => offlineBanner.classList.remove('visible'), 2000);
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus(); // Check au démarrage
