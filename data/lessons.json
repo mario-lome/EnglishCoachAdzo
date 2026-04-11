@@ -73,22 +73,61 @@
     "lessons": [
       {
         "id": 1,
-        "title": "Grammaire : Present Perfect",
-        "competence": "Utiliser le Present Perfect",
+        "title": "Present Perfect vs Past Simple",
+        "competence": "Distinguer et utiliser correctement les deux temps",
         "situationProbleme": {
-          "titre": "🗓️ Parler d'expériences",
-          "texte": "Tu veux raconter un voyage sans préciser quand. Quelle forme utiliser ?",
-          "image": "✈️",
-          "question": "Comment dire 'J'ai visité Paris' sans donner la date ?"
+          "titre": "🗓️ Un mail confus",
+          "texte": "Tu reçois ce message : 'I have finished the report yesterday.' Quelque chose cloche grammaticalement. Peux-tu identifier pourquoi ?",
+          "image": "📧",
+          "question": "Pourquoi associer 'have finished' et 'yesterday' est incorrect ?"
         },
         "lecon": {
-          "titre": "📚 Structure : Subject + have/has + V3",
+          "titre": "📚 Règles de grammaire",
           "contenu": [
-            { "exemple": "I have visited Paris.", "explication": "Action passée, temps non précisé" },
-            { "exemple": "She has learned English.", "explication": "Résultat présent" }
-          ]
+            { 
+              "regle": "Past Simple", 
+              "usage": "Action terminée à un moment PRÉCIS du passé", 
+              "exemple": "I finished the report yesterday.", 
+              "marqueurs": "yesterday, last week, in 2020, ago" 
+            },
+            { 
+              "regle": "Present Perfect", 
+              "usage": "Action passée liée au PRÉSENT ou temps NON PRÉCIS", 
+              "exemple": "I have finished the report.", 
+              "marqueurs": "already, yet, ever, never, just" 
+            }
+          ],
+          "astuce": "💡 Si tu vois un marqueur de temps précis → Past Simple. Sinon → Present Perfect."
         },
-        "activite": { "type": "theory" }
+        "activite": {
+          "type": "quiz",
+          "questions": [
+            { 
+              "q": "She ___ to Paris three times.", 
+              "options": ["has been", "went"], 
+              "correct": 0, 
+              "feedback": "✅ 'Three times' = expérience (temps non précisé) → Present Perfect" 
+            },
+            { 
+              "q": "They ___ the meeting last Monday.", 
+              "options": ["have started", "started"], 
+              "correct": 1, 
+              "feedback": "✅ 'Last Monday' = moment précis → Past Simple" 
+            },
+            { 
+              "q": "I ___ already ___ my homework.", 
+              "options": ["did / do", "have / done"], 
+              "correct": 1, 
+              "feedback": "✅ 'Already' → Present Perfect (have/has + V3)" 
+            },
+            { 
+              "q": "He ___ his keys yesterday.", 
+              "options": ["lost", "has lost"], 
+              "correct": 0, 
+              "feedback": "✅ 'Yesterday' → Past Simple" 
+            }
+          ]
+        }
       }
     ]
   }
