@@ -29,6 +29,11 @@
   
   <!-- 🎨 Styles -->
   <link rel="stylesheet" href="css/main.css">
+
+  <!-- 🎨 Polices Google Fonts (AJOUTÉ) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <header class="app-header">
@@ -39,6 +44,9 @@
     </select>
     <h1 id="app-title">EnglishCoachAdzo</h1>
   </header>
+
+  <!-- 🎛️ Bouton thème (AJOUTÉ) -->
+  <button class="theme-toggle" id="theme-toggle" aria-label="Changer de thème">🌙</button>
 
   <main id="app-content">
     <p>Chargement...</p>
@@ -63,7 +71,11 @@
       });
     }
   </script>
-    <!-- 📶 Bandeau état connexion -->
+
+  <!-- 📶 Bandeau état connexion -->
   <div id="offline-banner">📶 Mode hors ligne activé</div>
+
+  <!-- 🎨 Gestionnaire de thème (AJOUTÉ) -->
+  <script src="js/theme.js"></script>
 </body>
 </html>
