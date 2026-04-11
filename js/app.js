@@ -1,4 +1,4 @@
-// js/app.js - Version avec Dashboard + Pro ✅
+// js/app.js - Version Analytics + Pro + Offline ✅
 const selector = document.getElementById('track-selector');
 const html = document.documentElement;
 const content = document.getElementById('app-content');
@@ -26,6 +26,12 @@ function switchView(view) {
 
 async function loadTrack(track) {
   console.log(`🔄 [app.js] Chargement track: ${track}`);
+  
+  // 📈 Hook Analytics: Démarrer une nouvelle session
+  if (typeof Progress?.analytics?.startSession === 'function') {
+    Progress.analytics.startSession();
+  }
+  
   html.dataset.track = track;
   localStorage.setItem('selectedTrack', track);
 
@@ -49,6 +55,10 @@ async function loadTrack(track) {
         if (origComplete) origComplete.call(this);
         if (typeof Progress !== 'undefined') {
           Progress.save('kids', { score: window.engineState?.score || 0, lesson: lesson.title, competence: lesson.competence });
+        }
+        // 📈 Hook Analytics: Enregistrer la fin de session Kids
+        if (typeof Progress?.analytics?.end === 'function') {
+          Progress.analytics.end('kids', lesson.title);
         }
       };
       window.Engine.renderQuiz(lesson);
@@ -98,9 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const pScript = document.createElement('script'); pScript.src = '/js/progress.js'; pScript.defer = true; document.body.appendChild(pScript);
 });
 
-// 📶 Détection état réseau
+// 📶 Détection état réseau (ton code existant - inchangé)
 const offlineBanner = document.getElementById('offline-banner');
 function updateOnlineStatus() {
+  if (!offlineBanner) return; // Sécurité si l'élément n'existe pas
   const isOnline = navigator.onLine;
   offlineBanner.textContent = isOnline ? '🌐 Connecté' : '📶 Mode hors ligne activé';
   offlineBanner.classList.toggle('visible', !isOnline);
@@ -108,4 +119,4 @@ function updateOnlineStatus() {
 }
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
-updateOnlineStatus(); // Check au démarrage
+updateOnlineStatus();
