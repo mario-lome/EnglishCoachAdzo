@@ -39,25 +39,31 @@
     "lessons": [
       {
         "id": 1,
-        "title": "Emails formels",
-        "competence": "Rédiger un email professionnel",
-        "situationProbleme": {
-          "titre": "📧 Un client attend ta réponse",
-          "texte": "Tu dois répondre à un client international. Comment formuler ta réponse de manière professionnelle ?",
-          "image": "📩",
-          "question": "Quelle phrase utiliser pour commencer ?"
-        },
-        "lecon": {
-          "titre": "📚 Formules de politesse",
-          "contenu": [
-            { "phrase": "Dear Mr./Ms. [Name],", "usage": "Salutation formelle" },
-            { "phrase": "I am writing to...", "usage": "Introduire l'objet" },
-            { "phrase": "Please find attached...", "usage": "Joindre un document" }
+        "title": "Emails & Réunions",
+        "competence": "Rédiger et gérer la communication professionnelle",
+        "flashcards": [
+          { "front": "Dear Mr. Smith,", "back": "Salutation formelle (Cher M. Smith,)" },
+          { "front": "I am writing to inquire about...", "back": "Je vous écris pour me renseigner sur..." },
+          { "front": "Please find attached...", "back": "Veuillez trouver ci-joint..." },
+          { "front": "I look forward to your reply.", "back": "Dans l'attente de votre réponse." },
+          { "front": "Best regards,", "back": "Cordialement," }
+        ],
+        "pomodoro": {
+          "title": "🎧 Scénario Pomodoro",
+          "tasks": [
+            { "label": "Rédiger un email de suivi client", "duration": 25 },
+            { "label": "Préparer l'ordre du jour de la réunion", "duration": 15 },
+            { "label": "Relire et corriger les documents", "duration": 10 }
           ]
         },
-        "activite": {
-          "type": "fill",
-          "items": ["Dear Mr. Smith,", "I am writing to...", "Best regards,"]
+        "emails": {
+          "title": "📧 Mise en situation",
+          "scenario": "Ton client international demande un délai supplémentaire. Rédige une réponse professionnelle.",
+          "options": [
+            { "text": "OK, no problem. Take your time.", "correct": false, "feedback": "❌ Trop informel pour un client." },
+            { "text": "We understand your request. Please note that the deadline can be extended to Friday.", "correct": true, "feedback": "✅ Parfait ! Formel, clair et professionnel." },
+            { "text": "Why are you late again? We need it now.", "correct": false, "feedback": "❌ Agressif et non professionnel." }
+          ]
         }
       }
     ]
@@ -71,7 +77,7 @@
         "competence": "Utiliser le Present Perfect",
         "situationProbleme": {
           "titre": "🗓️ Parler d'expériences",
-          "texte": "Tu veux raconter un voyage que tu as fait, sans préciser quand. Quelle forme verbale utiliser ?",
+          "texte": "Tu veux raconter un voyage sans préciser quand. Quelle forme utiliser ?",
           "image": "✈️",
           "question": "Comment dire 'J'ai visité Paris' sans donner la date ?"
         },
@@ -79,7 +85,7 @@
           "titre": "📚 Structure : Subject + have/has + V3",
           "contenu": [
             { "exemple": "I have visited Paris.", "explication": "Action passée, temps non précisé" },
-            { "exemple": "She has learned English.", "explication": "Résultat présent d'une action passée" }
+            { "exemple": "She has learned English.", "explication": "Résultat présent" }
           ]
         },
         "activite": { "type": "theory" }
