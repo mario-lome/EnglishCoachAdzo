@@ -1,6 +1,13 @@
-// js/proEngine.js - Module Professionnel ✅
+// js/proEngine.js - Module Pro + Tactile/Swipe ✅
 console.log('🟢 proEngine.js: chargé');
 window.ProEngine = {};
+
+// 📳 Haptique (Android) + Fallback visuel iOS
+const vibrate = (ms = 15) => {
+  if (navigator.vibrate) navigator.vibrate(ms);
+  document.body.style.transform = 'scale(0.995)';
+  setTimeout(() => document.body.style.transform = 'scale(1)', 50);
+};
 
 window.ProEngine.renderLesson = function(lesson) {
   console.log('🏢 Pro: chargement de', lesson.title);
@@ -26,6 +33,7 @@ window.ProEngine.renderLesson = function(lesson) {
 window.ProEngine.setupTabs = function() {
   document.querySelectorAll('.pro-tab').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      vibrate(10);
       document.querySelectorAll('.pro-tab').forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
       const view = e.target.dataset.view;
@@ -36,7 +44,7 @@ window.ProEngine.setupTabs = function() {
   });
 };
 
-// 🃏 Flashcards
+// 🃏 Flashcards + SWIPE
 window.ProEngine.showFlashcards = function() {
   const content = document.getElementById('pro-content');
   const cards = this.currentLesson.flashcards || [];
@@ -50,12 +58,13 @@ window.ProEngine.showFlashcards = function() {
     const c = cards[idx];
     content.innerHTML = `
       <div class="flashcard-wrapper">
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-          <div class="flashcard-inner">
-            <div class="flashcard-front"><h3>${c.front}</h3><p>Clique pour révéler</p></div>
+        <div class="flashcard" id="fc-card">
+          <div class="flashcard-inner" id="fc-inner">
+            <div class="flashcard-front"><h3>${c.front}</h3><p>Clique ou swipe pour retourner</p></div>
             <div class="flashcard-back"><h3>${c.back}</h3></div>
           </div>
         </div>
+        <div class="swipe-hint">👆 Swipe gauche/droite pour naviguer</div>
         <div class="flashcard-nav">
           <button id="fc-prev" ${idx===0?'disabled':''}>⬅️ Préc.</button>
           <span>${idx+1} / ${cards.length}</span>
@@ -63,13 +72,44 @@ window.ProEngine.showFlashcards = function() {
         </div>
       </div>
     `;
-    document.getElementById('fc-next').onclick = () => { idx++; renderCard(); };
-    document.getElementById('fc-prev').onclick = () => { idx--; renderCard(); };
+    this.setupSwipeAndFlip();
+    document.getElementById('fc-next').onclick = () => { vibrate(10); idx++; renderCard(); };
+    document.getElementById('fc-prev').onclick = () => { vibrate(10); idx--; renderCard(); };
   };
+
   renderCard();
 };
 
-// ⏱️ Pomodoro
+window.ProEngine.setupSwipeAndFlip = function() {
+  const card = document.getElementById('fc-card');
+  const inner = document.getElementById('fc-inner');
+  let startX = 0, endX = 0, isFlipped = false;
+
+  // Flip au clic
+  card.addEventListener('click', () => {
+    vibrate(10);
+    isFlipped = !isFlipped;
+    inner.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+  });
+
+  // Swipe tactile
+  card.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+  card.addEventListener('touchmove', e => { endX = e.touches[0].clientX; }, {passive: true});
+  card.addEventListener('touchend', () => {
+    const diff = endX - startX;
+    if (Math.abs(diff) > 50) {
+      vibrate(15);
+      if (diff > 0 && parseInt(document.getElementById('fc-prev').disabled ? '0' : '1')) {
+        document.getElementById('fc-prev').click();
+      } else if (diff < 0 && parseInt(document.getElementById('fc-next').disabled ? '0' : '1')) {
+        document.getElementById('fc-next').click();
+      }
+    }
+    startX = 0; endX = 0;
+  }, {passive: true});
+};
+
+// ⏱️ Pomodoro (inchangé, juste ajout vibrate au start)
 window.ProEngine.showPomodoro = function() {
   const content = document.getElementById('pro-content');
   const tasks = this.currentLesson.pomodoro?.tasks || [];
@@ -99,6 +139,7 @@ window.ProEngine.showPomodoro = function() {
   const updateDisplay = () => document.getElementById('timer-val').textContent = format(timeLeft);
 
   document.getElementById('timer-start').onclick = () => {
+    vibrate(10);
     if(timer) { clearInterval(timer); timer=null; document.getElementById('timer-start').textContent='▶️ Reprendre'; return; }
     document.getElementById('timer-start').textContent='⏸️ Pause';
     timer = setInterval(() => {
@@ -107,7 +148,6 @@ window.ProEngine.showPomodoro = function() {
       if(timeLeft <= 0) {
         clearInterval(timer); timer=null;
         document.getElementById('timer-start').textContent='✅ Terminé';
-        // Son de fin + sauvegarde
         if(window.playSound) window.playSound('victory');
         if(typeof Progress !== 'undefined') {
           Progress.save('pro', { score: tasks[currentTask].duration, lesson: this.currentLesson.title, competence: this.currentLesson.competence });
@@ -123,7 +163,7 @@ window.ProEngine.showPomodoro = function() {
   };
 };
 
-// 📧 Emails
+// 📧 Emails (inchangé, ajout vibrate au clic)
 window.ProEngine.showEmails = function() {
   const content = document.getElementById('pro-content');
   const email = this.currentLesson.emails;
@@ -146,6 +186,7 @@ window.ProEngine.showEmails = function() {
 
   document.querySelectorAll('.email-opt').forEach(btn => {
     btn.onclick = () => {
+      vibrate(10);
       if(btn.classList.contains('answered')) return;
       const idx = parseInt(btn.dataset.i);
       const opt = email.options[idx];
