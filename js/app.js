@@ -78,6 +78,22 @@ async function loadTrack(track) {
         if (lesson) window.ProEngine.renderLesson(lesson);
       }
     } 
+
+        else if (track === 'method') {
+      if (typeof window.MethodEngine === 'undefined') {
+        content.innerHTML = '<p style="text-align:center;padding:2rem;">Chargement du module Méthode...</p>';
+        const script = document.createElement('script');
+        script.src = '/js/methodEngine.js';
+        script.onload = () => {
+          const lesson = trackData.lessons?.[0];
+          if (lesson) window.MethodEngine.renderLesson(lesson);
+        };
+        document.body.appendChild(script);
+      } else {
+        const lesson = trackData.lessons?.[0];
+        if (lesson) window.MethodEngine.renderLesson(lesson);
+      }
+    }
     else {
       content.innerHTML = `
         <div class="card" style="padding:2rem;text-align:center;">
