@@ -421,3 +421,26 @@ select {
 .opt-feedback.success { color: #10b981; }
 .opt-feedback.error { color: #ef4444; }
 .hidden { display: none; }
+
+/* 📱 Optimisations Tactiles & Offline */
+* { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button, .option-card, .email-opt { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.flashcard { transition: transform 0.1s ease; }
+.flashcard:active { transform: scale(0.98); }
+.swipe-hint { animation: swipeHint 2.5s infinite; opacity: 0.6; font-size: 0.85rem; text-align: center; margin: 0.8rem 0; }
+@keyframes swipeHint { 0%,100%{transform:translateX(-5px)} 50%{transform:translateX(5px)} }
+
+#offline-banner {
+  position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 20px;
+  font-size: 0.85rem; z-index: 9999; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+#offline-banner.visible {
+  display: block; animation: slideUp 0.3s ease forwards;
+}
+#offline-banner.hidden {
+  animation: slideDown 0.3s ease forwards;
+}
+@keyframes slideUp { to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+@keyframes slideDown { to { transform: translateX(-50%) translateY(20px); opacity: 0; } }
