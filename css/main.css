@@ -341,3 +341,40 @@ select {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* 📊 Dashboard Progression */
+.progress-dashboard { padding: 1rem; max-width: 600px; margin: 0 auto; }
+.dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.level-badge { background: var(--primary); color: white; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+
+.score-card { background: var(--card-bg); padding: 1.5rem; border-radius: 16px; text-align: center; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.1); }
+.score-value { font-size: 3rem; font-weight: 800; color: var(--primary); line-height: 1; }
+.score-label { opacity: 0.8; margin: 0.5rem 0; }
+.progress-bar-mini { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin: 0.8rem 0; }
+.progress-fill-mini { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; transition: width 0.3s; }
+.progress-text { font-size: 0.85rem; opacity: 0.7; }
+
+.badges-section h3, .history-section h3 { margin: 1.5rem 0 1rem; font-size: 1.1rem; }
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.8rem; }
+.badge-card { background: var(--card-bg); padding: 1rem; border-radius: 12px; text-align: center; border: 2px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+.badge-card.unlocked { border-color: var(--accent); background: rgba(16,185,129,0.1); }
+.badge-card.locked { opacity: 0.6; }
+.badge-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+.badge-name { font-weight: 600; font-size: 0.9rem; }
+.badge-desc { font-size: 0.75rem; opacity: 0.7; margin-top: 0.3rem; }
+
+.history-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.history-item { background: var(--card-bg); padding: 1rem; border-radius: 12px; border-left: 3px solid var(--primary); }
+.history-date { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem; }
+.history-content { display: flex; justify-content: space-between; align-items: center; }
+.history-score { background: var(--primary); color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+
+.dash-actions { display: flex; gap: 0.8rem; margin-top: 2rem; }
+.btn-dash { flex: 1; padding: 0.8rem; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: transform 0.1s; }
+.btn-dash:active { transform: scale(0.98); }
+.btn-dash.btn-outline { background: transparent; border: 2px solid rgba(255,255,255,0.3); color: var(--text); }
+
+@media (max-width: 480px) {
+  .dash-actions { flex-direction: column; }
+  .badges-grid { grid-template-columns: repeat(2, 1fr); }
+}
