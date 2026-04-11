@@ -30,7 +30,7 @@ async function loadTrack(track) {
   localStorage.setItem('selectedTrack', track);
 
   try {
-    const res = await fetch('/data/lessons.json');
+    const res = await fetch('/data/lessons.json?v=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     const data = await res.json();
     const trackData = data[track];
