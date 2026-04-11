@@ -9,7 +9,6 @@ async function loadTrack(track) {
   localStorage.setItem('selectedTrack', track);
 
   try {
-    // 🔍 Fetch avec chemin absolu
     const res = await fetch('/data/lessons.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     
@@ -19,11 +18,9 @@ async function loadTrack(track) {
     const trackData = data[track];
     if (!trackData) throw new Error(`Track "${track}" introuvable dans le JSON`);
 
-    // Met à jour le titre
     const titles = { kids: '🎮', pro: '🏢', method: '📈' };
     document.getElementById('app-title').textContent = `EnglishCoachAdzo ${titles[track] || ''}`;
 
-    // 🎮 Mode Enfants : appelle Engine.renderQuiz
     if (track === 'kids') {
       console.log('🔍 [app.js] Vérification Engine:', {
         exists: typeof window.Engine !== 'undefined',
@@ -31,7 +28,7 @@ async function loadTrack(track) {
       });
 
       if (typeof window.Engine?.renderQuiz !== 'function') {
-        throw new Error('Engine.renderQuiz non disponible. Vérifie engine.js et l\'ordre des scripts.');
+        throw new Error('Engine.renderQuiz non disponible. Vérifie engine.js.');
       }
 
       const lesson = trackData.lessons?.[0];
@@ -41,9 +38,7 @@ async function loadTrack(track) {
 
       console.log('🎮 [app.js] Appel de Engine.renderQuiz()...');
       window.Engine.renderQuiz(lesson);
-    } 
-    // 🏢📈 Modes Pro/Méthode : fallback simple
-    else {
+    } else {
       content.innerHTML = `
         <div class="card" style="padding:2rem;text-align:center;">
           <h2>${trackData.title}</h2>
@@ -58,21 +53,14 @@ async function loadTrack(track) {
       <div class="card" style="padding:2rem;text-align:center;border:2px solid #ef4444;border-radius:12px;">
         <h2 style="color:#ef4444;">⚠️ Erreur de chargement</h2>
         <p style="margin:1rem 0;font-family:monospace;background:#fef2f2;padding:1rem;border-radius:8px;">${err.message}</p>
-        <details style="text-align:left;font-size:0.9rem;opacity:0.8;">
-          <summary>Voir les détails techniques</summary>
-          <pre>${err.stack || ''}</pre>
-        </details>
         <button class="btn-apc" onclick="location.reload()">Recharger la page 🔄</button>
       </div>
     `;
   }
 }
 
-// Initialisation
 selector.addEventListener('change', e => loadTrack(e.target.value));
 selector.value = localStorage.getItem('selectedTrack') || 'kids';
-
-// Démarre au chargement
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🟢 [app.js] DOM prêt, chargement du track...');
   loadTrack(selector.value);
