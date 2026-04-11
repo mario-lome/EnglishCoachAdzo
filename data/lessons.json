@@ -5,25 +5,66 @@
       {
         "id": 1,
         "title": "Les animaux",
-        "type": "match",
-        "pairs": [
-          { "img": "🐱", "word": "Cat" },
-          { "img": "🐶", "word": "Dog" },
-          { "img": "🐦", "word": "Bird" }
-        ]
+        "competence": "Nommer des animaux en anglais",
+        "situationProbleme": {
+          "titre": "🐾 Au zoo avec Lina",
+          "texte": "Lina visite le zoo avec sa classe. Elle voit un animal avec des rayures noires et blanches. Elle veut dire à sa maîtresse ce qu'elle voit, mais elle ne connaît pas le mot en anglais. Peux-tu l'aider ?",
+          "image": "🦓",
+          "question": "Comment dit-on 'zèbre' en anglais ?"
+        },
+        "lecon": {
+          "titre": "📚 Vocabulaire : Les animaux",
+          "contenu": [
+            { "mot": "Cat", "traduction": "Chat", "emoji": "🐱", "audio": "cat" },
+            { "mot": "Dog", "traduction": "Chien", "emoji": "🐶", "audio": "dog" },
+            { "mot": "Bird", "traduction": "Oiseau", "emoji": "🐦", "audio": "bird" },
+            { "mot": "Frog", "traduction": "Grenouille", "emoji": "🐸", "audio": "frog" }
+          ],
+          "astuce": "💡 Astuce : 'Cat' se prononce comme 'kat' en français !"
+        },
+        "activite": {
+          "type": "match",
+          "pairs": [
+            { "img": "🐱", "word": "Cat" },
+            { "img": "🐶", "word": "Dog" },
+            { "img": "🐦", "word": "Bird" },
+            { "img": "🐸", "word": "Frog" }
+          ]
+        }
       }
     ]
   },
   "pro": {
     "title": "💼 Anglais professionnel",
     "lessons": [
-      { "id": 1, "title": "Emails formels", "type": "fill", "items": ["Please find attached..."] }
+      {
+        "id": 1,
+        "title": "Emails formels",
+        "competence": "Rédiger un email professionnel en anglais",
+        "situationProbleme": {
+          "titre": "📧 Un client attend ta réponse",
+          "texte": "Tu dois répondre à un client international qui demande un devis. Comment formuler ta réponse de manière professionnelle en anglais ?",
+          "image": "📩",
+          "question": "Quelle phrase utiliser pour commencer ?"
+        },
+        "lecon": {
+          "titre": "📚 Formules de politesse",
+          "contenu": [
+            { "phrase": "Dear Mr./Ms. [Name],", "usage": "Salutation formelle" },
+            { "phrase": "I am writing to...", "usage": "Introduire l'objet" },
+            { "phrase": "Please find attached...", "usage": "Joindre un document" },
+            { "phrase": "Best regards,", "usage": "Formule de clôture" }
+          ]
+        },
+        "activite": {
+          "type": "fill",
+          "items": ["Dear Mr. Smith,", "I am writing to...", "Best regards,"]
+        }
+      }
     ]
   },
   "method": {
     "title": "📈 Méthode structurée",
-    "lessons": [
-      { "id": 1, "title": "Grammaire : Present Perfect", "type": "theory", "content": "Subject + have/has + V3..." }
-    ]
+    "lessons": []
   }
 }
