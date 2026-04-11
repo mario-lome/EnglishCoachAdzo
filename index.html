@@ -2,11 +2,32 @@
 <html lang="fr" data-track="kids">
 <head>
   <meta charset="UTF-8">
+  
+  <!-- 📱 Viewport optimisé mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  
+  <!-- 📲 PWA : Installation écran d'accueil -->
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="EnglishCoachAdzo">
+  
+  <!-- 🎨 Thème et couleurs -->
   <meta name="theme-color" content="#4361ee">
+  <meta name="background-color" content="#f8f9fa">
+  
+  <!-- 🔖 Titre et description -->
   <title>EnglishCoachAdzo</title>
+  <meta name="description" content="Application d'apprentissage de l'anglais pour enfants, pros et autodidactes">
+  
+  <!-- 🧭 Manifest PWA (chemin absolu) -->
   <link rel="manifest" href="/manifest.json">
+  
+  <!-- 🖼️ Favicon (évite l'erreur 404) -->
+  <link rel="icon" href="data:,">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+  
+  <!-- 🎨 Styles -->
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -28,11 +49,19 @@
     <button data-view="progress">📊 Progrès</button>
   </nav>
 
-  <!-- ⚠️ CORRECTIONS APPLIQUÉES :
-       1. Supprimé le doublon de app.js
-       2. Inversé l'ordre : engine.js DOIT charger AVANT app.js
-       3. Retiré type="module" pour que window.Engine soit accessible globalement -->
+  <!-- ⚙️ Scripts : engine.js AVANT app.js, SANS type="module" -->
   <script src="js/engine.js"></script>
   <script src="js/app.js"></script>
+  
+  <!-- 🔄 Service Worker (enregistré après le chargement de la page) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('✅ SW enregistré:', reg.scope))
+          .catch(err => console.warn('⚠️ SW échec:', err));
+      });
+    }
+  </script>
 </body>
 </html>
