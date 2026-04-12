@@ -1,4 +1,4 @@
-// js/app.js - Version Analytics + Pro + Offline ✅
+// js/app.js - Version Freemium + Analytics + Pro + Offline ✅
 const selector = document.getElementById('track-selector');
 const html = document.documentElement;
 const content = document.getElementById('app-content');
@@ -45,6 +45,7 @@ async function loadTrack(track) {
     const titles = { kids: '🎮', pro: '🏢', method: '📈' };
     document.getElementById('app-title').textContent = `EnglishCoachAdzo ${titles[track] || ''}`;
 
+    // 👶 ENFANTS : Toujours gratuit
     if (track === 'kids') {
       if (typeof window.Engine?.renderQuiz !== 'function') throw new Error('Engine.renderQuiz non disponible');
       const lesson = trackData.lessons?.[0];
@@ -56,44 +57,69 @@ async function loadTrack(track) {
         if (typeof Progress !== 'undefined') {
           Progress.save('kids', { score: window.engineState?.score || 0, lesson: lesson.title, competence: lesson.competence });
         }
-        // 📈 Hook Analytics: Enregistrer la fin de session Kids
         if (typeof Progress?.analytics?.end === 'function') {
           Progress.analytics.end('kids', lesson.title);
         }
       };
       window.Engine.renderQuiz(lesson);
     } 
-    else if (track === 'pro') {
-      if (typeof window.ProEngine === 'undefined') {
-        content.innerHTML = '<p style="text-align:center;padding:2rem;">Chargement du module Pro...</p>';
-        const script = document.createElement('script');
-        script.src = '/js/proEngine.js';
-        script.onload = () => {
-          const lesson = trackData.lessons?.[0];
+    // 🏢📈 PRO / MÉTHODE : Vérification Premium
+    else if (track === 'pro' || track === 'method') {
+      const lessonIndex = 0; // Pour l'instant : 1ère leçon gratuite, les autres premium
+      const lesson = trackData.lessons?.[lessonIndex];
+      
+      if (!lesson) {
+        content.innerHTML = `<p style="text-align:center;padding:2rem;">Aucune leçon disponible.</p>`;
+        return;
+      }
+      
+      // 🔒 Vérifier l'accès Premium
+      const isPremium = typeof window.Premium?.isPremium === 'function' && window.Premium.isPremium();
+      const isFreeLesson = lessonIndex === 0; // 1ère leçon toujours gratuite
+      
+      if (!isPremium && !isFreeLesson) {
+        // Afficher l'écran de verrouillage Premium
+        if (typeof window.Premium?.showLockScreen === 'function') {
+          window.Premium.showLockScreen(content, track, lesson.title);
+        } else {
+          // Fallback : charger premium.js puis afficher
+          content.innerHTML = '<p style="text-align:center;padding:2rem;">Chargement des options Premium...</p>';
+          const script = document.createElement('script');
+          script.src = '/js/premium.js';
+          script.onload = () => {
+            if (typeof window.Premium?.showLockScreen === 'function') {
+              window.Premium.showLockScreen(content, track, lesson.title);
+            }
+          };
+          document.body.appendChild(script);
+        }
+        return;
+      }
+      
+      // ✅ Accès autorisé : charger le module correspondant
+      if (track === 'pro') {
+        if (typeof window.ProEngine === 'undefined') {
+          content.innerHTML = '<p style="text-align:center;padding:2rem;">Chargement du module Pro...</p>';
+          const script = document.createElement('script');
+          script.src = '/js/proEngine.js';
+          script.onload = () => { if (lesson) window.ProEngine.renderLesson(lesson); };
+          document.body.appendChild(script);
+        } else {
           if (lesson) window.ProEngine.renderLesson(lesson);
-        };
-        document.body.appendChild(script);
-      } else {
-        const lesson = trackData.lessons?.[0];
-        if (lesson) window.ProEngine.renderLesson(lesson);
+        }
+      } else if (track === 'method') {
+        if (typeof window.MethodEngine === 'undefined') {
+          content.innerHTML = '<p style="text-align:center;padding:2rem;">Chargement du module Méthode...</p>';
+          const script = document.createElement('script');
+          script.src = '/js/methodEngine.js';
+          script.onload = () => { if (lesson) window.MethodEngine.renderLesson(lesson); };
+          document.body.appendChild(script);
+        } else {
+          if (lesson) window.MethodEngine.renderLesson(lesson);
+        }
       }
     } 
-
-        else if (track === 'method') {
-      if (typeof window.MethodEngine === 'undefined') {
-        content.innerHTML = '<p style="text-align:center;padding:2rem;">Chargement du module Méthode...</p>';
-        const script = document.createElement('script');
-        script.src = '/js/methodEngine.js';
-        script.onload = () => {
-          const lesson = trackData.lessons?.[0];
-          if (lesson) window.MethodEngine.renderLesson(lesson);
-        };
-        document.body.appendChild(script);
-      } else {
-        const lesson = trackData.lessons?.[0];
-        if (lesson) window.MethodEngine.renderLesson(lesson);
-      }
-    }
+    // 🔄 Fallback pour autres tracks
     else {
       content.innerHTML = `
         <div class="card" style="padding:2rem;text-align:center;">
@@ -114,20 +140,27 @@ async function loadTrack(track) {
   }
 }
 
+// 🎯 Gestion des événements
 selector.addEventListener('change', e => { loadTrack(e.target.value); switchView('home'); });
 navButtons.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
 
+// 🚀 Initialisation au chargement du DOM
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🟢 [app.js] DOM prêt');
   selector.value = localStorage.getItem('selectedTrack') || 'kids';
   loadTrack(selector.value);
+  
+  // Charger progress.js en arrière-plan
   const pScript = document.createElement('script'); pScript.src = '/js/progress.js'; pScript.defer = true; document.body.appendChild(pScript);
+  
+  // Charger premium.js en arrière-plan
+  const premScript = document.createElement('script'); premScript.src = '/js/premium.js'; premScript.defer = true; document.body.appendChild(premScript);
 });
 
-// 📶 Détection état réseau (ton code existant - inchangé)
+// 📶 Détection état réseau (inchangé)
 const offlineBanner = document.getElementById('offline-banner');
 function updateOnlineStatus() {
-  if (!offlineBanner) return; // Sécurité si l'élément n'existe pas
+  if (!offlineBanner) return;
   const isOnline = navigator.onLine;
   offlineBanner.textContent = isOnline ? '🌐 Connecté' : '📶 Mode hors ligne activé';
   offlineBanner.classList.toggle('visible', !isOnline);
